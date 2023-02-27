@@ -5,10 +5,15 @@ import { useGlobalContext } from "./context/store";
 import noImg from "./../public/no-img.jpg";
 import styled from "@emotion/styled";
 import Link from "next/link";
+import { Button, Dialog, Typography } from "@mui/material";
+import { useState } from "react";
 
 const ProductContainer = styled.div`
-  max-width: 1080px;
   margin: auto;
+  max-width: 1080px;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 100px;
 `;
 const ProductUl = styled.ul`
   list-style: none;
@@ -38,7 +43,13 @@ const InfoContainer = styled.div`
   margin-top: 4px;
   padding-left: 5px;
 `;
-
+const ProdButton = styled(Button)`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  height: 100%;
+`;
 const InfoWrap = styled.div`
   display: flex;
   line-height: 0;
@@ -52,7 +63,10 @@ const InfoWrap = styled.div`
 `;
 export default function Home() {
   const { data } = useGlobalContext();
-
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const handleDialog = () => {
+    setDialogOpen((pre) => !pre);
+  };
   return (
     <ProductContainer>
       <ProductUl>
@@ -99,8 +113,17 @@ export default function Home() {
             </Link>
           )
         )}
+        <ProductLi>
+          <ProdButton onClick={handleDialog} variant="outlined">
+            <div>+</div>
+            <div>Add Product</div>
+          </ProdButton>
+        </ProductLi>
       </ProductUl>
-      <CreateProduct />
+
+      <Dialog open={dialogOpen} onClose={handleDialog}>
+        <CreateProduct handleDialog={handleDialog} />
+      </Dialog>
     </ProductContainer>
   );
 }

@@ -3,12 +3,14 @@
 import { useRouter } from "next/navigation";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { Button, TextField, Typography } from "@mui/material";
-import styled from "styled-components";
+import { Button, CircularProgress, TextField, Typography } from "@mui/material";
+import styled from "@emotion/styled";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import { useState } from "react";
+import CheckIcon from "@mui/icons-material/Check";
 
 // interface IProps {
 //   handleClick: (e: any) => void;
@@ -32,6 +34,7 @@ const initialValues: MyFormValues = {
 const FormContainer = styled.div`
   display: flex;
   justify-content: center;
+  margin: 20px;
 `;
 const FormWrap = styled(Form)`
   display: flex;
@@ -43,7 +46,9 @@ const FormWrap = styled(Form)`
     margin-bottom: 12px;
   }
 `;
-export default function CreateProduct() {
+export default function CreateProduct({ handleDialog }: any) {
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
   const router = useRouter();
 
   return (
@@ -60,6 +65,7 @@ export default function CreateProduct() {
           //   file: Yup.mixed().required("Required"),
         })}
         onSubmit={async (values, actions) => {
+          setLoading(true);
           try {
             await fetch(
               "http://127.0.0.1:8090/api/collections/varo_app/records",
@@ -70,11 +76,12 @@ export default function CreateProduct() {
                 },
                 body: JSON.stringify(values),
               }
-            ).then((res) => {
-              console.log(res);
-              router.refresh();
+            );
+            setLoading(false);
+            setDone(true);
+            setTimeout(() => {
               window.location.reload();
-            });
+            }, 1000);
           } catch {
             alert("Something wrong. please try again.");
           }
@@ -147,7 +154,13 @@ export default function CreateProduct() {
                 />
               )} */}
               <Button type="submit" disabled={isSubmitting}>
-                Submit
+                {loading ? (
+                  <CircularProgress />
+                ) : done ? (
+                  <CheckIcon />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </FormWrap>
           );

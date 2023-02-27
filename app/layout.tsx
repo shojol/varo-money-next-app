@@ -1,6 +1,7 @@
 import "./globals.css";
 import { GlobalContextProvider } from "./context/store";
-import ResponsiveAppBar from "./components/ResponsiveAppBar";
+import ResponsiveAppBar from "./components/NavigationBar";
+import Footer from "./components/Footer";
 
 export const metadata = {
   title: "Create Next App",
@@ -15,8 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ResponsiveAppBar />
-        <GlobalContextProvider>{children}</GlobalContextProvider>
+        <div id="page-container">
+          <div id="content-wrap">
+            <ResponsiveAppBar />
+            <GlobalContextProvider>{children}</GlobalContextProvider>
+            <Footer></Footer>
+          </div>
+        </div>
       </body>
     </html>
   );

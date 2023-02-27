@@ -17,7 +17,7 @@ import Image from "next/image";
 const pages = ["Home"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
-export function ResponsiveAppBar() {
+export default function NavigationBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -144,4 +144,3 @@ export function ResponsiveAppBar() {
     </AppBar>
   );
 }
-export default ResponsiveAppBar;
