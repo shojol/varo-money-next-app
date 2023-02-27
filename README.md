@@ -6,8 +6,10 @@ First, run the DB
 
 - start the DB by running the following console command in the extracted directory:
 
-``bash
+```bash
 ./pocketbase serve
+
+```
 
 Then, run the development server:
 
