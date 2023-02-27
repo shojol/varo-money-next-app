@@ -22,7 +22,7 @@ interface MyFormValues {
   email: string;
   image: any;
 }
-const productIdGenerator = Date.now().toString(36) + Math.random().toString(36);
+const productIdGenerator = Date.now().toString(26);
 const initialValues: MyFormValues = {
   productId: productIdGenerator,
   productName: "",
