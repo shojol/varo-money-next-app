@@ -1,91 +1,106 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
+import Image from "next/image";
+import CreateProduct from "./components/createProduct";
+import { useGlobalContext } from "./context/store";
+import noImg from "./../public/no-img.jpg";
+import styled from "@emotion/styled";
+import Link from "next/link";
 
-const inter = Inter({ subsets: ['latin'] })
+const ProductContainer = styled.div`
+  max-width: 1080px;
+  margin: auto;
+`;
+const ProductUl = styled.ul`
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1080px;
+`;
 
+const ProductLi = styled.li`
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+  color: #2f4f4f;
+  width: 150px;
+  height: 250px;
+  font-size: 12px;
+  padding: 5px;
+  letter-spacing: 0.2px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+`;
+const InfoContainer = styled.div`
+  margin-top: 4px;
+  padding-left: 5px;
+`;
+
+const InfoWrap = styled.div`
+  display: flex;
+  line-height: 0;
+  > p {
+    &:nth-child(1) {
+      color: gray;
+      margin-right: 5px;
+      font-size: 12px;
+    }
+  }
+`;
 export default function Home() {
+  const { data } = useGlobalContext();
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <ProductContainer>
+      <ProductUl>
+        {data.map(
+          ({
+            id,
+            email,
+            productCategory,
+            productId,
+            productImg,
+            productName,
+          }) => (
+            <Link key={productId} href={`./${id}`}>
+              <ProductLi>
+                <Image
+                  src={
+                    productImg
+                      ? `http://127.0.0.1:8090/api/files/nd7v4rzi7ilzdpw/${id}/${productImg}`
+                      : noImg
+                  }
+                  alt={productName}
+                  width={150}
+                  height={150}
+                />
+                <InfoContainer>
+                  <InfoWrap>
+                    <p>Id:</p>
+                    <p>{productId}</p>
+                  </InfoWrap>
+                  <InfoWrap>
+                    <p>Name:</p>
+                    <p>{productName}</p>
+                  </InfoWrap>
+                  <InfoWrap>
+                    <p>Category:</p>
+                    <p>{productCategory}</p>
+                  </InfoWrap>
+                  <InfoWrap>
+                    <p>Email:</p>
+                    <p>{email}</p>
+                  </InfoWrap>
+                </InfoContainer>
+              </ProductLi>
+            </Link>
+          )
+        )}
+      </ProductUl>
+      <CreateProduct />
+    </ProductContainer>
+  );
 }

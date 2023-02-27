@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, run the DB
+
+- start the DB by running the following console command in the extracted directory:
+
+./pocketbase serve
+
+Then, run the development server:
 
 ```bash
 npm run dev
