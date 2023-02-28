@@ -20,7 +20,7 @@ export default function RootLayout({
           <div id="content-wrap">
             <ResponsiveAppBar />
             <GlobalContextProvider>{children}</GlobalContextProvider>
-            <Footer></Footer>
+            <Footer />
           </div>
         </div>
       </body>

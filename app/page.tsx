@@ -5,7 +5,7 @@ import { useGlobalContext } from "./context/store";
 import noImg from "./../public/no-img.jpg";
 import styled from "@emotion/styled";
 import Link from "next/link";
-import { Button, Dialog, Typography } from "@mui/material";
+import { Button, CircularProgress, Dialog } from "@mui/material";
 import { useState } from "react";
 
 const ProductContainer = styled.div`
@@ -42,6 +42,7 @@ const ProductLi = styled.li`
 const InfoContainer = styled.div`
   margin-top: 4px;
   padding-left: 5px;
+  padding-right: 5px;
 `;
 const ProdButton = styled(Button)`
   display: flex;
@@ -61,6 +62,7 @@ const InfoWrap = styled.div`
     }
   }
 `;
+
 export default function Home() {
   const { data } = useGlobalContext();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -70,48 +72,60 @@ export default function Home() {
   return (
     <ProductContainer>
       <ProductUl>
-        {data.map(
-          ({
-            id,
-            email,
-            productCategory,
-            productId,
-            productImg,
-            productName,
-          }) => (
-            <Link key={productId} href={`./${id}`}>
-              <ProductLi>
-                <Image
-                  src={
-                    productImg
-                      ? `http://127.0.0.1:8090/api/files/nd7v4rzi7ilzdpw/${id}/${productImg}`
-                      : noImg
-                  }
-                  alt={productName}
-                  width={150}
-                  height={150}
-                />
-                <InfoContainer>
-                  <InfoWrap>
-                    <p>Id:</p>
-                    <p>{productId}</p>
-                  </InfoWrap>
-                  <InfoWrap>
-                    <p>Name:</p>
-                    <p>{productName}</p>
-                  </InfoWrap>
-                  <InfoWrap>
-                    <p>Category:</p>
-                    <p>{productCategory}</p>
-                  </InfoWrap>
-                  <InfoWrap>
-                    <p>Email:</p>
-                    <p>{email}</p>
-                  </InfoWrap>
-                </InfoContainer>
-              </ProductLi>
-            </Link>
+        {data.length ? (
+          data.map(
+            ({
+              id,
+              email,
+              productCategory,
+              productId,
+              productImg,
+              productName,
+            }) => (
+              <Link key={productId} href={`./${id}`}>
+                <ProductLi>
+                  <Image
+                    src={
+                      productImg
+                        ? `http://127.0.0.1:8090/api/files/nd7v4rzi7ilzdpw/${id}/${productImg}`
+                        : noImg
+                    }
+                    alt={productName}
+                    width={150}
+                    height={150}
+                  />
+                  <InfoContainer>
+                    <InfoWrap>
+                      <p>Id:</p>
+                      <p>{productId}</p>
+                    </InfoWrap>
+                    <InfoWrap>
+                      <p>Name:</p>
+                      <p>{productName}</p>
+                    </InfoWrap>
+                    <InfoWrap>
+                      <p>Category:</p>
+                      <p>{productCategory}</p>
+                    </InfoWrap>
+                    <InfoWrap>
+                      <p>Email:</p>
+                      <p>{email}</p>
+                    </InfoWrap>
+                  </InfoContainer>
+                </ProductLi>
+              </Link>
+            )
           )
+        ) : (
+          <ProductLi
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress />
+          </ProductLi>
         )}
         <ProductLi>
           <ProdButton onClick={handleDialog} variant="outlined">

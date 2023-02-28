@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { Button, CircularProgress, TextField, Typography } from "@mui/material";
@@ -11,25 +10,18 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import { useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
+import { fetchData, useGlobalContext } from "../context/store";
 
 // interface IProps {
 //   handleClick: (e: any) => void;
 // }
-interface MyFormValues {
-  productId: string;
-  productName: string;
-  productCategory: string;
-  email: string;
-  image: any;
-}
-const productIdGenerator = Date.now().toString(26);
-const initialValues: MyFormValues = {
-  productId: productIdGenerator,
-  productName: "",
-  productCategory: "",
-  email: "",
-  image: "",
-};
+// interface MyFormValues {
+//   productId: string;
+//   productName: string;
+//   productCategory: string;
+//   email: string;
+//   image: any;
+// }
 
 const FormContainer = styled.div`
   display: flex;
@@ -46,15 +38,22 @@ const FormWrap = styled(Form)`
     margin-bottom: 12px;
   }
 `;
+
 export default function CreateProduct({ handleDialog }: any) {
+  const { setData } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const router = useRouter();
-
+  const uniqueId = Date.now().toString(26);
   return (
     <FormContainer>
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          productId: uniqueId,
+          productName: "",
+          productCategory: "",
+          email: "",
+          image: "",
+        }}
         validationSchema={Yup.object({
           productId: Yup.string().required("Required"),
           productName: Yup.string()
@@ -79,13 +78,11 @@ export default function CreateProduct({ handleDialog }: any) {
             );
             setLoading(false);
             setDone(true);
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
+            handleDialog();
+            fetchData().then((d) => setData(d?.items as any[]));
           } catch {
             alert("Something wrong. please try again.");
           }
-
           actions.setSubmitting(false);
         }}
       >
@@ -98,9 +95,13 @@ export default function CreateProduct({ handleDialog }: any) {
                 label="Product Id"
                 name="productId"
                 size="small"
-                defaultValue={productIdGenerator}
+                value={uniqueId}
+                // defaultValue={Date.now().toString(26)}
                 disabled
               />
+              {touched.productId && errors.productId && (
+                <div>{errors.productId}</div>
+              )}
               <TextField
                 label="Product Name"
                 name="productName"
