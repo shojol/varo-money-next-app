@@ -62,6 +62,7 @@ const InfoWrap = styled.div`
 export default function Home() {
   const { data } = useGlobalContext();
   const [dialogOpen, setDialogOpen] = useState(false);
+
   const handleDialog = () => {
     setDialogOpen((pre) => !pre);
   };
@@ -75,15 +76,16 @@ export default function Home() {
               email,
               productCategory,
               productId,
-              productImg,
+              documents,
               productName,
+              collectionName,
             }) => (
               <Link key={productId} href={`./${id}`}>
                 <ProductLi>
                   <Image
                     src={
-                      productImg
-                        ? `http://127.0.0.1:8090/api/files/nd7v4rzi7ilzdpw/${id}/${productImg}`
+                      documents
+                        ? `http://127.0.0.1:8090/api/files/varo_app/${id}/${documents}`
                         : noImg
                     }
                     alt={productName}

@@ -8,18 +8,13 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
-import { fetchData, useGlobalContext } from "../context/store";
+import { fetchData, IProductData, useGlobalContext } from "../context/store";
+import PocketBase from "pocketbase";
+import Image from "next/image";
+import noImg from "./../../public/no-img.jpg";
 
-export interface IFormValues {
-  id: string;
-  productId: string;
-  productName: string;
-  productCategory: string;
-  email: string;
-  image: any;
-}
 const FormContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -28,9 +23,14 @@ const FormContainer = styled.div`
 const FormWrap = styled(Form)`
   display: flex;
   flex-direction: column;
+  gap: 15px;
+  max-width: 700px;
+  width: 300px;
+  align-items: center;
+`;
+const ButtonWrap = styled.div`
+  display: flex;
   gap: 10px;
-  max-width: 500px;
-  width: 100%;
 `;
 
 export default function CreateUpdateProduct({
@@ -38,20 +38,25 @@ export default function CreateUpdateProduct({
   product,
 }: {
   handleDialog: any;
-  product?: IFormValues;
+  product?: IProductData;
 }) {
   const { setData } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [newImg, setNewImg] = useState<any>("");
   const uniqueId = Date.now().toString(26);
 
-  const initialValues: IFormValues = {
-    id: product ? product.id : "",
+  const initialValues: IProductData = {
     productId: product ? product.productId : uniqueId,
     productName: product ? product.productName : "",
-    productCategory: product ? product.productCategory : "",
+    productCategory: product ? product.productCategory : "other",
     email: product ? product.email : "",
-    image: "",
+    documents: product ? product.email : "",
+    collectionId: product ? product.collectionId : "",
+    collectionName: product ? product.collectionName : "",
+    created: product ? product.created : "",
+    id: product ? product.id : "",
+    updated: product ? product.updated : "",
   };
   const validationSchema = Yup.object({
     productId: Yup.string().required("Required"),
@@ -60,19 +65,22 @@ export default function CreateUpdateProduct({
       .required("Required"),
     productCategory: Yup.string().required("Required"),
     email: Yup.string().email("Invalid Email").required(),
-    //   file: Yup.mixed().required("Required"),
+    documents: Yup.mixed().required("Required"),
   });
-  const onSubmit = async (values: IFormValues, actions: any) => {
-    if (!product) {
+  const onSubmit = async (values: IProductData, actions: any) => {
+    console.log(values);
+    const pb = new PocketBase("http://127.0.0.1:8090");
+    const formData = new FormData();
+    formData.append("documents", values.documents);
+    formData.append("productName", values.productName);
+    formData.append("productId", values.productId);
+    formData.append("productCategory", values.productCategory);
+    formData.append("email", values.email);
+
+    if (!product && values) {
       setLoading(true);
       try {
-        await fetch("http://127.0.0.1:8090/api/collections/varo_app/records", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        });
+        await pb.collection("varo_app").create(formData);
         setLoading(false);
         setDone(true);
         handleDialog();
@@ -83,25 +91,17 @@ export default function CreateUpdateProduct({
       actions.setSubmitting(false);
     } else {
       try {
-        await fetch(
-          `http://127.0.0.1:8090/api/collections/varo_app/records/${product.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values),
-          }
-        );
+        await pb.collection(values.collectionId).update(values.id, formData);
         setLoading(false);
         setDone(true);
         handleDialog();
-        fetchData().then((d) => setData(d?.items as any[]));
+        fetchData().then((d) => setData(d?.items as IProductData[]));
       } catch {
         alert("Something wrong. please try again.");
       }
     }
   };
+
   return (
     <FormContainer>
       <Formik
@@ -116,33 +116,27 @@ export default function CreateUpdateProduct({
           isSubmitting,
           setValues,
           values,
+          setFieldValue,
         }) => {
           if (!!product && !values.email) {
-            setValues({
-              id: product.id,
-              productId: product.productId,
-              productName: product.productName,
-              productCategory: product.productCategory,
-              email: product.email,
-              image: product.image,
-            });
+            setValues(product);
           }
           return (
             <FormWrap>
               <Typography>
                 {!!product ? "Add Product" : "Update Product"}
               </Typography>
-
+              {/* {touched.documents && errors.documents && (
+                <div>{errors.documents}</div>
+              )} */}
               <TextField
                 label="Product Id"
                 name="productId"
                 size="small"
                 value={product ? product.productId : uniqueId}
                 disabled
+                fullWidth
               />
-              {touched.productId && errors.productId && (
-                <div>{errors.productId}</div>
-              )}
               <TextField
                 label="Product Name"
                 name="productName"
@@ -150,6 +144,7 @@ export default function CreateUpdateProduct({
                 onChange={handleChange}
                 value={values.productName}
                 required
+                fullWidth
               />
               {touched.productName && errors.productName && (
                 <div>{errors.productName}</div>
@@ -161,10 +156,14 @@ export default function CreateUpdateProduct({
                 onChange={handleChange}
                 value={values.email}
                 required
+                fullWidth
               />
               {touched.email && errors.email && <div>{errors.email}</div>}
 
-              <FormControl sx={{ m: 1, minWidth: 120, margin: 0 }} size="small">
+              <FormControl
+                sx={{ m: 1, minWidth: 120, margin: 0, width: "100%" }}
+                size="small"
+              >
                 <InputLabel id="demo-select-small">
                   Product Category*
                 </InputLabel>
@@ -183,30 +182,50 @@ export default function CreateUpdateProduct({
                 </Select>
               </FormControl>
 
-              {/* <input
-                id="image"
-                name="image"
-                type="file"
-                accept="image/*"
-                onChange={(e: any) => setFieldValue("image", e.target.files[0])}
-              />
-              {values.image && (
-                <Image
-                  width={100}
-                  height={100}
-                  src={URL.createObjectURL(values.image)}
-                  alt="Thumb"
+              <Button variant="contained" component="label">
+                Upload
+                <input
+                  hidden
+                  id="documents"
+                  name="documents"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e: any) => {
+                    setNewImg(URL.createObjectURL(e.target.files[0]));
+                    setFieldValue("documents", e.target.files[0]);
+                  }}
                 />
-              )} */}
-              <Button type="submit" disabled={isSubmitting}>
-                {loading ? (
-                  <CircularProgress />
-                ) : done ? (
-                  <CheckIcon />
-                ) : (
-                  "Submit"
-                )}
               </Button>
+              <Image
+                src={
+                  newImg
+                    ? newImg
+                    : product?.documents
+                    ? `http://127.0.0.1:8090/api/files/varo_app/${product?.id}/${product?.documents}`
+                    : noImg
+                }
+                alt={product?.productName || "product img"}
+                width={150}
+                height={150}
+              />
+              <ButtonWrap>
+                <Button variant="outlined" onClick={handleDialog}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="outlined"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {loading ? (
+                    <CircularProgress />
+                  ) : done ? (
+                    <CheckIcon />
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
+              </ButtonWrap>
             </FormWrap>
           );
         }}

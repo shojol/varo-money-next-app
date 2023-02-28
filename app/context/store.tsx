@@ -8,24 +8,27 @@ import {
   useState,
 } from "react";
 
-export type DataType = {
-  id: string;
-  productName: string;
-  productId: string;
-  productCategory: "category a" | "category b" | "category c";
-  productImg: string;
+export type IProductData = {
+  collectionId: string;
+  collectionName: string;
+  created: string;
+  documents: any;
   email: string;
-  image: any;
+  id: string;
+  productCategory: "a" | "b" | "c" | "other";
+  productId: string;
+  productName: string;
+  updated: string;
 };
 
 interface ContextProps {
-  data: DataType[];
-  setData: Dispatch<SetStateAction<DataType[]>>;
+  data: IProductData[];
+  setData: Dispatch<SetStateAction<IProductData[]>>;
 }
 
 const GlobalContext = createContext<ContextProps>({
   data: [],
-  setData: (): DataType[] => [],
+  setData: (): IProductData[] => [],
 });
 export async function fetchData() {
   const res = await fetch(
@@ -33,10 +36,11 @@ export async function fetchData() {
     { cache: "no-store" }
   );
   const data = await res.json();
+  console.log(data);
   return data;
 }
 export const GlobalContextProvider = ({ children }: any) => {
-  const [data, setData] = useState<DataType[]>([]);
+  const [data, setData] = useState<IProductData[]>([]);
 
   useEffect(() => {
     fetchData().then((d) => setData(d?.items as any[]));

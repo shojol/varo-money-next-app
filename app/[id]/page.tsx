@@ -3,7 +3,7 @@ import Image from "next/image";
 import noImg from "./../../public/no-img.jpg";
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import { fetchData, useGlobalContext } from "../context/store";
+import { fetchData, IProductData, useGlobalContext } from "../context/store";
 import { usePathname } from "next/navigation";
 import {
   Button,
@@ -13,9 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import CreateUpdateProduct, {
-  IFormValues,
-} from "../components/CreateUpdateProduct";
+import CreateUpdateProduct from "../components/CreateUpdateProduct";
 
 const ProductContainer = styled.div`
   display: flex;
@@ -32,7 +30,7 @@ const SingleItem = styled.div`
 
 export default function Product() {
   const { data, setData } = useGlobalContext();
-  const [product, setProduct] = useState<IFormValues>();
+  const [product, setProduct] = useState<IProductData>();
   const [popup, setPopup] = useState({ show: false, id: "" });
   const pathname = usePathname();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -70,11 +68,11 @@ export default function Product() {
     <ProductContainer>
       <Image
         src={
-          product?.image
-            ? `http://127.0.0.1:8090/api/files/nd7v4rzi7ilzdpw/${product.id}/${product.image}`
+          product?.documents
+            ? `http://127.0.0.1:8090/api/files/varo_app/${product?.id}/${product?.documents}`
             : noImg
         }
-        alt={product?.image}
+        alt={product?.productName || "product img"}
         width={150}
         height={150}
       />
