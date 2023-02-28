@@ -15,6 +15,7 @@ export type DataType = {
   productCategory: "category a" | "category b" | "category c";
   productImg: string;
   email: string;
+  image: any;
 };
 
 interface ContextProps {
