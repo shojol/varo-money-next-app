@@ -10,16 +10,16 @@ import {
 import PocketBase from "pocketbase";
 
 export type IProductData = {
-  collectionId: string;
-  collectionName: string;
-  created: string;
+  collectionId?: string;
+  collectionName?: string;
+  created?: string;
   documents: any;
   email: string;
   id: string;
   productCategory: "a" | "b" | "c" | "";
   productId: string;
   productName: string;
-  updated: string;
+  updated?: string;
 };
 
 interface ContextProps {

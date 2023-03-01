@@ -5,7 +5,7 @@ import { Button, CircularProgress, Dialog, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import CreateUpdateProduct from "./components/CreateUpdateProduct";
 import SearchProduct from "./components/SearchProduct";
-import Cards from "./components/Cards";
+import Card from "./components/Card";
 
 const ProductContainer = styled.div`
   margin: auto;
@@ -61,7 +61,6 @@ export default function Home() {
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTimeout(() => {
-      console.log(e.target.value);
       const typedLatter = e.target.value;
       setProducts(
         data.filter((product) =>
@@ -95,7 +94,26 @@ export default function Home() {
               </Typography>
             </ProductLi>
           ) : (
-            <Cards products={products} />
+            products.map(
+              ({
+                id,
+                email,
+                productCategory,
+                productId,
+                documents,
+                productName,
+              }) => (
+                <Card
+                  key={id}
+                  id={id}
+                  productId={productId}
+                  documents={documents}
+                  email={email}
+                  productName={productName}
+                  productCategory={productCategory}
+                />
+              )
+            )
           )
         ) : (
           <ProductLi
