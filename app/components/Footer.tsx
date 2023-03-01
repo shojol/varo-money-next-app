@@ -2,7 +2,7 @@
 import styled from "@emotion/styled";
 import { Typography } from "@mui/material";
 
-const FooterContainer = styled(Typography)`
+const FooterContainer = styled("div")`
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -15,5 +15,9 @@ const FooterContainer = styled(Typography)`
   justify-content: center;
 `;
 export default function Footer() {
-  return <FooterContainer>Footer</FooterContainer>;
+  return (
+    <FooterContainer>
+      <Typography>Footer</Typography>
+    </FooterContainer>
+  );
 }

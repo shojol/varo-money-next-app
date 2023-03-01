@@ -10,9 +10,11 @@ import Cards from "./components/Cards";
 const ProductContainer = styled.div`
   margin: auto;
   max-width: 1080px;
-  min-height: 100vh;
   position: relative;
   padding-bottom: 100px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 `;
 const ProductUl = styled.ul`
   list-style: none;

@@ -2,7 +2,13 @@
 
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import { Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Divider,
+  TextField,
+  Typography,
+} from "@mui/material";
 import styled from "@emotion/styled";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -200,7 +206,6 @@ export default function CreateUpdateProduct({
               {touched.documents && errors.documents && (
                 <div>*{errors.documents as any}</div>
               )}
-
               {(product || newImg) && (
                 <Image
                   src={
@@ -215,6 +220,7 @@ export default function CreateUpdateProduct({
                   height={150}
                 />
               )}
+              <Divider />
 
               <ButtonWrap>
                 <Button variant="outlined" onClick={handleDialog}>
