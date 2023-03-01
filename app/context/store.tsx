@@ -25,6 +25,8 @@ export type IProductData = {
 interface ContextProps {
   data: IProductData[];
   setData: Dispatch<SetStateAction<IProductData[]>>;
+  loading?: boolean;
+  setLoading?: Dispatch<SetStateAction<boolean>>;
 }
 
 const GlobalContext = createContext<ContextProps>({
@@ -36,17 +38,21 @@ export async function fetchData() {
   const records = await pb.collection("varo_app").getFullList({
     sort: "-created",
   });
+  console.log(records);
   return records;
 }
 export const GlobalContextProvider = ({ children }: any) => {
   const [data, setData] = useState<IProductData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchData().then((d) => setData(d as any[]));
+    fetchData()
+      .then((d) => setData(d as any[]))
+      .then(() => setLoading(false));
   }, []);
 
   return (
-    <GlobalContext.Provider value={{ data, setData }}>
+    <GlobalContext.Provider value={{ data, setData, loading, setLoading }}>
       {children}
     </GlobalContext.Provider>
   );
