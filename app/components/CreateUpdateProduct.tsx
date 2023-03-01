@@ -98,7 +98,7 @@ export default function CreateUpdateProduct({
       actions.setSubmitting(false);
     } else {
       try {
-        await pb.collection(values.collectionId).update(values.id, formData);
+        await pb.collection("varo_app").update(values.id, formData);
         setLoading(false);
         setDone(true);
         handleDialog();
