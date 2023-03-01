@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import CreateUpdateProduct from "../components/CreateUpdateProduct";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const ProductContainer = styled.div`
   display: flex;
@@ -61,7 +62,7 @@ export default function Product() {
     } catch {
       alert("Something is wrong. please try again.");
     }
-    await fetchData().then((d) => setData(d?.items as any[]));
+    await fetchData().then((d) => setData(d as any[]));
   };
 
   return (
@@ -111,8 +112,17 @@ export default function Product() {
         </SingleItem>
       </div>
       <div>
-        <Button onClick={() => handleDel(product?.id)}>Delete</Button>
-        <Button onClick={() => setEditDialogOpen(true)}>Edit</Button>
+        <Button
+          variant="outlined"
+          onClick={() => handleDel(product?.id)}
+          startIcon={<DeleteIcon />}
+          style={{ marginRight: 10 }}
+        >
+          Delete
+        </Button>
+        <Button variant="outlined" onClick={() => setEditDialogOpen(true)}>
+          Edit
+        </Button>
       </div>
       <Dialog
         open={popup.show}
@@ -126,7 +136,11 @@ export default function Product() {
           <Button autoFocus onClick={handleClose}>
             Cancel
           </Button>
-          <Button onClick={deleteProduct} autoFocus>
+          <Button
+            variant="outlined"
+            onClick={deleteProduct}
+            startIcon={<DeleteIcon />}
+          >
             Delete
           </Button>
         </DialogActions>

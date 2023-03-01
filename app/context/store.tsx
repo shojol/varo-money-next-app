@@ -7,6 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import PocketBase from "pocketbase";
 
 export type IProductData = {
   collectionId: string;
@@ -15,7 +16,7 @@ export type IProductData = {
   documents: any;
   email: string;
   id: string;
-  productCategory: "a" | "b" | "c" | "other";
+  productCategory: "a" | "b" | "c" | "";
   productId: string;
   productName: string;
   updated: string;
@@ -31,19 +32,17 @@ const GlobalContext = createContext<ContextProps>({
   setData: (): IProductData[] => [],
 });
 export async function fetchData() {
-  const res = await fetch(
-    `http://127.0.0.1:8090/api/collections/varo_app/records?page=1&perPage=30`,
-    { cache: "no-store" }
-  );
-  const data = await res.json();
-  console.log(data);
-  return data;
+  const pb = new PocketBase("http://127.0.0.1:8090");
+  const records = await pb.collection("varo_app").getFullList({
+    sort: "-created",
+  });
+  return records;
 }
 export const GlobalContextProvider = ({ children }: any) => {
   const [data, setData] = useState<IProductData[]>([]);
 
   useEffect(() => {
-    fetchData().then((d) => setData(d?.items as any[]));
+    fetchData().then((d) => setData(d as any[]));
   }, []);
 
   return (

@@ -8,7 +8,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CheckIcon from "@mui/icons-material/Check";
 import { fetchData, IProductData, useGlobalContext } from "../context/store";
 import PocketBase from "pocketbase";
@@ -49,7 +49,7 @@ export default function CreateUpdateProduct({
   const initialValues: IProductData = {
     productId: product ? product.productId : uniqueId,
     productName: product ? product.productName : "",
-    productCategory: product ? product.productCategory : "other",
+    productCategory: product ? product.productCategory : "",
     email: product ? product.email : "",
     documents: product ? product.email : "",
     collectionId: product ? product.collectionId : "",
@@ -58,7 +58,7 @@ export default function CreateUpdateProduct({
     id: product ? product.id : "",
     updated: product ? product.updated : "",
   };
-  const validationSchema = Yup.object({
+  const validationSchema = Yup.object().shape({
     productId: Yup.string().required("Required"),
     productName: Yup.string()
       .max(20, "Must be 20 characters or less")
@@ -68,7 +68,7 @@ export default function CreateUpdateProduct({
     documents: Yup.mixed().required("Required"),
   });
   const onSubmit = async (values: IProductData, actions: any) => {
-    console.log(values);
+    // console.log(values);
     const pb = new PocketBase("http://127.0.0.1:8090");
     const formData = new FormData();
     formData.append("documents", values.documents);
@@ -84,8 +84,9 @@ export default function CreateUpdateProduct({
         setLoading(false);
         setDone(true);
         handleDialog();
-        fetchData().then((d) => setData(d?.items as any[]));
+        fetchData().then((d) => setData(d as any[]));
       } catch {
+        handleDialog();
         alert("Something wrong. please try again.");
       }
       actions.setSubmitting(false);
@@ -95,7 +96,7 @@ export default function CreateUpdateProduct({
         setLoading(false);
         setDone(true);
         handleDialog();
-        fetchData().then((d) => setData(d?.items as IProductData[]));
+        fetchData().then((d) => setData(d as any[]));
       } catch {
         alert("Something wrong. please try again.");
       }
@@ -121,14 +122,14 @@ export default function CreateUpdateProduct({
           if (!!product && !values.email) {
             setValues(product);
           }
+          if (errors) {
+            console.log(errors);
+          }
           return (
             <FormWrap>
               <Typography>
-                {!!product ? "Add Product" : "Update Product"}
+                {!product ? "Add Product" : "Update Product"}
               </Typography>
-              {/* {touched.documents && errors.documents && (
-                <div>{errors.documents}</div>
-              )} */}
               <TextField
                 label="Product Id"
                 name="productId"
@@ -196,18 +197,25 @@ export default function CreateUpdateProduct({
                   }}
                 />
               </Button>
-              <Image
-                src={
-                  newImg
-                    ? newImg
-                    : product?.documents
-                    ? `http://127.0.0.1:8090/api/files/varo_app/${product?.id}/${product?.documents}`
-                    : noImg
-                }
-                alt={product?.productName || "product img"}
-                width={150}
-                height={150}
-              />
+              {touched.documents && errors.documents && (
+                <div>*{errors.documents as any}</div>
+              )}
+
+              {(product || newImg) && (
+                <Image
+                  src={
+                    newImg
+                      ? newImg
+                      : product?.documents
+                      ? `http://127.0.0.1:8090/api/files/varo_app/${product?.id}/${product?.documents}`
+                      : noImg
+                  }
+                  alt={product?.productName || "product img"}
+                  width={150}
+                  height={150}
+                />
+              )}
+
               <ButtonWrap>
                 <Button variant="outlined" onClick={handleDialog}>
                   Cancel
