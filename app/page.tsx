@@ -1,13 +1,11 @@
 "use client";
-import Image from "next/image";
-import { useGlobalContext } from "./context/store";
-import noImg from "./../public/no-img.jpg";
+import { IProductData, useGlobalContext } from "./context/store";
 import styled from "@emotion/styled";
-import Link from "next/link";
 import { Button, CircularProgress, Dialog, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import CreateUpdateProduct from "./components/CreateUpdateProduct";
-// import SearchProduct from "./components/SearchProduct";
+import SearchProduct from "./components/SearchProduct";
+import Cards from "./components/Cards";
 
 const ProductContainer = styled.div`
   margin: auto;
@@ -40,139 +38,62 @@ const ProductLi = styled.li`
   overflow: hidden;
   cursor: pointer;
 `;
-const InfoContainer = styled.div`
-  margin-top: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-`;
 const ProdButton = styled(Button)`
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin: 0;
+  padding: 0;
   height: 100%;
-`;
-const InfoWrap = styled.div`
-  display: flex;
-  gap: 5px;
-  line-height: 0;
-  height: 22px;
-  overflow: auto;
 `;
 
 export default function Home() {
   const { data } = useGlobalContext();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<IProductData[]>([]);
 
   const handleDialog = () => {
     setDialogOpen((pre) => !pre);
   };
-  // const handleSearchInput = (e: unknown) => {
-  //   console.log(e.target.value);
-  //   const typedLatter = e.target.value;
-  // };
+
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTimeout(() => {
+      console.log(e.target.value);
+      const typedLatter = e.target.value;
+      setProducts(
+        data.filter((product) =>
+          product.productName.toLowerCase().includes(typedLatter.toLowerCase())
+        )
+      );
+    }, 1000);
+  };
+
   useEffect(() => {
     if (data) {
+      setProducts(data);
       setLoading(false);
     }
   }, [data]);
   return (
     <ProductContainer>
-      {/* <SearchProduct handleSearchInput={handleSearchInput} /> */}
+      <SearchProduct handleSearchInput={handleSearchInput} />
       <ProductUl>
         {!loading ? (
-          data.map(
-            ({
-              id,
-              email,
-              productCategory,
-              productId,
-              documents,
-              productName,
-              collectionName,
-            }) => (
-              <Link key={productId} href={`./${id}`}>
-                <ProductLi>
-                  <Image
-                    src={
-                      documents
-                        ? `http://127.0.0.1:8090/api/files/varo_app/${id}/${documents}`
-                        : noImg
-                    }
-                    alt={productName}
-                    width={150}
-                    height={150}
-                  />
-                  <InfoContainer>
-                    <InfoWrap>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        Id:
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        {productId}
-                      </Typography>
-                    </InfoWrap>
-                    <InfoWrap>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        Name:
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        {productName}
-                      </Typography>
-                    </InfoWrap>
-                    <InfoWrap>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        Category:
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        {productCategory}
-                      </Typography>
-                    </InfoWrap>
-                    <InfoWrap>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        Email:
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        gutterBottom
-                      >
-                        {email}
-                      </Typography>
-                    </InfoWrap>
-                  </InfoContainer>
-                </ProductLi>
-              </Link>
-            )
+          data.length === 0 ? (
+            <ProductLi
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography sx={{ textAlign: "center", margin: 1 }}>
+                Sorry!! You have no product yet.
+              </Typography>
+            </ProductLi>
+          ) : (
+            <Cards products={products} />
           )
         ) : (
           <ProductLi
