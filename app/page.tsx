@@ -5,8 +5,9 @@ import noImg from "./../public/no-img.jpg";
 import styled from "@emotion/styled";
 import Link from "next/link";
 import { Button, CircularProgress, Dialog, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreateUpdateProduct from "./components/CreateUpdateProduct";
+// import SearchProduct from "./components/SearchProduct";
 
 const ProductContainer = styled.div`
   margin: auto;
@@ -62,14 +63,25 @@ const InfoWrap = styled.div`
 export default function Home() {
   const { data } = useGlobalContext();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleDialog = () => {
     setDialogOpen((pre) => !pre);
   };
+  // const handleSearchInput = (e: unknown) => {
+  //   console.log(e.target.value);
+  //   const typedLatter = e.target.value;
+  // };
+  useEffect(() => {
+    if (data) {
+      setLoading(false);
+    }
+  }, [data]);
   return (
     <ProductContainer>
+      {/* <SearchProduct handleSearchInput={handleSearchInput} /> */}
       <ProductUl>
-        {data.length ? (
+        {!loading ? (
           data.map(
             ({
               id,
