@@ -57,7 +57,7 @@ export default function CreateUpdateProduct({
     productName: product ? product.productName : "",
     productCategory: product ? product.productCategory : "",
     email: product ? product.email : "",
-    documents: product ? product.email : "",
+    documents: product ? product.documents : "",
     collectionId: product ? product.collectionId : "",
     collectionName: product ? product.collectionName : "",
     created: product ? product.created : "",
@@ -206,6 +206,7 @@ export default function CreateUpdateProduct({
               {touched.documents && errors.documents && (
                 <div>*{errors.documents as any}</div>
               )}
+              <Divider />
               {(product || newImg) && (
                 <Image
                   src={
@@ -220,7 +221,6 @@ export default function CreateUpdateProduct({
                   height={150}
                 />
               )}
-              <Divider />
 
               <ButtonWrap>
                 <Button variant="outlined" onClick={handleDialog}>
